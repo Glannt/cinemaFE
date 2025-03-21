@@ -7,3 +7,6 @@ export const getShowtimeByCinemaIdAndMovieIdAndShowDate = (
   movieId: string,
   showDate: string,
 ) => http.get(`showtimes/cinema/${cinemaId}/movie/${movieId}/date/${showDate}`);
+
+export const getProjectionTypeByShowTimeId = (id: string) =>
+  http.get(`showtimes/${id}/projection-type`);

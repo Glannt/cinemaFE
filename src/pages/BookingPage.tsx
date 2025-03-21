@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams } from "react-router";
+import { useLocation } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { CircularProgress } from "@heroui/react";
 
@@ -21,10 +21,10 @@ const fetchMovieById = async ({ queryKey }: { queryKey: [string, string | undefi
   return response.data.data;
 };
 
-export default function BookingPage() {
-  const { movieId } = useParams<{ movieId: string }>();
-  // const location = useLocation();
-  // const id = location.state?.id;
+export default function MoviePage() {
+  // const { movieId } = useParams<{ movieId: string }>();
+  const location = useLocation();
+  const movieId = location.state?.id;
   // const movie = movies.find((m) => m.id.toString() === movieId) || movies[0];
   const [selectedDate, setSelectedDate] = useState<string>(() => {
     const today = new Date();
@@ -78,7 +78,7 @@ export default function BookingPage() {
           {/* SeatSelector chỉ mở khi chọn đủ date, address, time, type */}
           <div
             className={
-              selectedDate && selectedAddress && selectedTime && selectedType
+              selectedDate && selectedAddress && selectedTime
                 ? ""
                 : "opacity-50 pointer-events-none"
             }

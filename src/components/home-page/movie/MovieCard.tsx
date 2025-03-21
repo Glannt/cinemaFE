@@ -3,6 +3,7 @@ import type { Movie } from "@/types/movie.type";
 import React from "react";
 import { Card, CardBody, Button, Image } from "@heroui/react";
 import { Play } from "lucide-react";
+import { useNavigate } from "react-router";
 
 interface MovieCardProps {
   movie: Movie;
@@ -16,6 +17,11 @@ export const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
     return `${hours}h ${remainingMinutes}m`;
   };
   const [isHovered, setIsHovered] = React.useState(false);
+
+  const navigate = useNavigate();
+  const handleClick = (id: string, name: string) => {
+    navigate(`/book/${name}`, { state: { id } });
+  };
 
   return (
     <Card
@@ -39,7 +45,7 @@ export const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
         >
           <Button
             className='w-[12rem] bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 mx-auto'
-            onPress={() => console.log(`Booking movie: ${movie.title}`)}
+            onPress={() => handleClick(movie.id, movie.title)}
           >
             Mua vé
           </Button>

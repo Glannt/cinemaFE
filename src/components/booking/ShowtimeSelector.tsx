@@ -1,13 +1,12 @@
 import type { Cinema } from "@/types/cinema.type";
 
-import { Select, SelectItem } from "@heroui/react";
-import { useQuery } from "@tanstack/react-query";
 import React from "react";
+import { useQuery } from "@tanstack/react-query";
+import { Select, SelectItem } from "@heroui/react";
 
 import { getCinemaWithActiveStatusAndMovieId } from "@/api/cinema.api";
 import { getShowtimeByCinemaIdAndMovieIdAndShowDate } from "@/api/showtime.api";
 import { Showtime } from "@/types/showtime.type";
-import { getGenresByMovieId } from "@/api/movie.api";
 
 type ShowtimeSelectorProps = {
   movieId: string | undefined;
@@ -20,7 +19,6 @@ type ShowtimeSelectorProps = {
   selectedDate: string;
 };
 
-// Mock API functions
 const fetchTimes = async ({
   queryKey,
 }: {
@@ -28,30 +26,30 @@ const fetchTimes = async ({
 }) => {
   const [, cinemaId, movieId, showDate] = queryKey;
 
-  if (!cinemaId || !movieId) throw new Error("Cinema ID and Movie ID are required");
   if (!cinemaId || !movieId || !showDate) {
     throw new Error("Cinema ID, Movie ID, and Show Date are required");
   }
+
   const response = await getShowtimeByCinemaIdAndMovieIdAndShowDate(cinemaId, movieId, showDate);
 
   return response.data.data;
 };
 
-const fetchTypes = async ({ queryKey }: { queryKey: readonly [string, string | undefined] }) => {
-  const [, movieId] = queryKey;
+// const fetchTypes = async ({ queryKey }: { queryKey: readonly [string, string | undefined] }) => {
+//   const [, showtimeId] = queryKey;
 
-  if (!movieId) throw new Error("Movie ID is required");
-  const response = await getGenresByMovieId(movieId);
+//   if (!showtimeId) throw new Error("Showtime ID is required");
 
-  return response.data.data;
-};
+//   const response = await getProjectionTypeByShowTimeId(showtimeId);
+
+//   return response.data.data;
+// };
 
 const fetchAddresses = async ({ queryKey }: { queryKey: [string, string | undefined] }) => {
-  // In a real app, this would be an API call
   const [, movieId] = queryKey;
+
   const response = await getCinemaWithActiveStatusAndMovieId(movieId);
 
-  // return response;
   return response.data.data;
 };
 
@@ -71,40 +69,40 @@ export default function ShowtimeSelector({
     enabled: !!selectedAddress && !!movieId,
   });
 
-  const { data: types = [] } = useQuery<String[]>({
-    queryKey: ["types"],
-    queryFn: () => fetchTypes({ queryKey: ["types", movieId] }),
-  });
+  // const { data: types } = useQuery<string>({
+  //   queryKey: ["types"],
+  //   queryFn: () => fetchTypes({ queryKey: ["types", selectedTime] }),
+  // });
 
   const { data: addresses = [] } = useQuery<Cinema[]>({
     queryKey: ["addresses", movieId],
-    queryFn: () => fetchAddresses({ queryKey: ["times", movieId] }),
+    queryFn: () => fetchAddresses({ queryKey: ["addresses", movieId] }),
   });
 
-  function extractTime(isoString: string) {
+  const extractTime = (isoString: string) => {
     if (!isoString) return "";
     const date = new Date(isoString);
     const hours = date.getHours().toString().padStart(2, "0");
     const minutes = date.getMinutes().toString().padStart(2, "0");
 
     return `${hours}:${minutes}`;
-  }
+  };
+
+  React.useEffect(() => {
+    setSelectedAddress("");
+    setSelectedTime("");
+    setSelectedType("");
+  }, [selectedDate]);
 
   return (
     <div className='grid grid-cols-3 gap-4 mb-8'>
       <div>
         <Select
-          classNames={{
-            label: "text-gray-400 text-sm block mb-2",
-          }}
+          classNames={{ label: "text-gray-400 text-sm block mb-2" }}
           label='Address'
           placeholder='Choose Address'
           selectedKeys={selectedAddress ? [selectedAddress] : []}
-          onSelectionChange={(keys) => {
-            const selected = Array.from(keys)[0];
-
-            setSelectedAddress(String(selected));
-          }}
+          onSelectionChange={(keys) => setSelectedAddress(String(Array.from(keys)[0]))}
         >
           {addresses.map((address) => (
             <SelectItem key={address.id}>{address.name}</SelectItem>
@@ -113,16 +111,21 @@ export default function ShowtimeSelector({
       </div>
       <div>
         <Select
-          classNames={{
-            label: "text-gray-400 text-sm block mb-2",
-          }}
+          classNames={{ label: "text-gray-400 text-sm block mb-2" }}
+          isDisabled={!selectedAddress}
           label='Time'
           placeholder='Choose Time'
+          selectedKeys={selectedTime ? [selectedTime] : []}
           value={selectedTime}
           onSelectionChange={(keys) => {
-            const selected = Array.from(keys)[0];
+            const selectedKey = String(Array.from(keys)[0]);
 
-            setSelectedTime(String(selected));
+            setSelectedTime(selectedKey);
+            const selectedTimeObj = times.find((time) => String(time.id) === selectedKey);
+
+            if (selectedTimeObj) {
+              setSelectedType(selectedTimeObj.projectionType); // Replace 'projectionType' with the correct property name
+            }
           }}
         >
           {times.map((time) => (
@@ -132,21 +135,18 @@ export default function ShowtimeSelector({
       </div>
       <div>
         <Select
-          // className='w-full bg-[#2D2E33] text-[#BAB4B4] rounded-lg p-2 transition-all duration-300 ease-in-out hover:bg-[#3D3E43] hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500'
-          classNames={{
-            label: "text-gray-400 text-sm block mb-2",
-          }}
+          classNames={{ label: "text-gray-400 text-sm block mb-2" }}
+          isDisabled={!selectedTime}
           label='Type'
-          value={selectedType}
-          onSelectionChange={(keys) => {
-            const selected = Array.from(keys)[0];
-
-            setSelectedType(String(selected));
-          }}
+          placeholder='Choose Type'
+          selectedKeys={selectedType ? [selectedType] : []}
+          onSelectionChange={(keys) => setSelectedType(String(Array.from(keys)[0]))}
         >
-          {types.map((type, index) => (
-            <SelectItem key={index}>{type}</SelectItem>
-          ))}
+          {selectedType ? (
+            <SelectItem key={selectedType}>{selectedType}</SelectItem>
+          ) : (
+            <SelectItem />
+          )}
         </Select>
       </div>
     </div>

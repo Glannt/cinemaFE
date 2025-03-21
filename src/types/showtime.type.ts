@@ -11,5 +11,6 @@ type Showtime = {
   // status: string;
   showDate: string;
   price: number;
+  projectionType: string;
 };
 export type { Showtime };

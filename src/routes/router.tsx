@@ -1,16 +1,17 @@
 import { createBrowserRouter } from "react-router-dom";
 
-import BookingPage from "@/pages/BookingPage";
+// import BookingPage from "@/pages/BookingPage";
 import HomePage from "@/pages/HomePage";
 import IndexPage from "@/pages";
+import MoviePage from "@/pages/BookingPage";
 export const router = createBrowserRouter([
   {
     path: "/",
     element: <HomePage />,
   },
   {
-    path: "/book/:movieId",
-    element: <BookingPage />,
+    path: "/book/:name",
+    element: <MoviePage />,
   },
   {
     path: "/index",
