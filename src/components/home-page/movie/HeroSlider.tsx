@@ -1,11 +1,24 @@
 import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, Play } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 
-import { movies } from "@/data/movie";
+import { getMovieWithShowingStatus } from "@/api/movie.api";
+import { Movie } from "@/types/movie.type";
+
+// import { movies } from "@/data/movie";
+const fetchMovies = async () => {
+  const response = await getMovieWithShowingStatus();
+
+  return response.data.data;
+};
 
 export default function HeroSlider() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const { data: movies = [] } = useQuery<Movie[]>({
+    queryKey: ["movies"],
+    queryFn: fetchMovies,
+  });
 
   // Auto-play functionality
   useEffect(() => {
@@ -73,12 +86,12 @@ export default function HeroSlider() {
                   }`}
                 >
                   <div className='flex gap-2'>
-                    {movie.categories.map((category) => (
+                    {movie.genres.map((genre, index) => (
                       <span
-                        key={category.id}
+                        key={index}
                         className='inline-block px-3 py-1 bg-[#383942] rounded-full text-sm text-[#CFCFCF]'
                       >
-                        {category.name}
+                        {genre}
                       </span>
                     ))}
                   </div>

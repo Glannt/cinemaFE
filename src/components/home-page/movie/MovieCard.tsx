@@ -62,9 +62,9 @@ export const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
             <span>{formatDuration(movie.duration)}</span>
           </div>
           <div className='flex flex-wrap gap-1'>
-            {movie.categories.map((category) => (
-              <span key={category.id} className='rounded-full bg-default-100 px-2 py-1 text-tiny'>
-                {category.name}
+            {movie.genres.map((genre, index) => (
+              <span key={index} className='rounded-full bg-default-100 px-2 py-1 text-tiny'>
+                {genre}
               </span>
             ))}
           </div>

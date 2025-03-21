@@ -2,8 +2,8 @@ import { Hall } from "./hall.type";
 
 type Cinema = {
   id: number;
-  cinemaName: string;
-  addressId: string;
+  name: string;
+  address: string;
   status: string;
   halls: Hall[];
 };

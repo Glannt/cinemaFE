@@ -1,20 +1,15 @@
-import { Category } from "./category.type";
 import { Image } from "./image.type";
-import { Showtime } from "./showtime.type";
 
 type Movie = {
-  id: number;
+  id: string;
   title: string;
-  releaseDate: string; // Dùng string vì DATE thường được lưu dưới dạng ISO string
-  duration: number; // Số phút
-  director: string;
-  images: Image[];
-  categories: Category[];
-  allowedToShow: boolean;
-  createdAt: string; // Timestamp dạng ISO string
-  updatedAt: string; // Timestamp dạng ISO string
-  status: string;
   description: string;
-  showtimes: Showtime[];
+  duration: number;
+  director: string;
+  // cast: string | null;
+  genres: string[]; // mảng string
+  releaseDate: string; // ISO date string
+  images: Image[];
+  status: "showing" | "upcoming" | string; // tùy thêm các status khác
 };
 export type { Movie };

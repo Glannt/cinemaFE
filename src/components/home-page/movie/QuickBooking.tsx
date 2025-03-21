@@ -1,10 +1,24 @@
 import { Button } from "@heroui/button";
+import { useQuery } from "@tanstack/react-query";
 
 import SelectWrapper from "./SelectWrapper";
 
-import { movies } from "@/data/movie";
+import { Movie } from "@/types/movie.type";
+import { getMovieWithShowingStatus } from "@/api/movie.api";
+
+// import { movies } from "@/data/movie";
+const fetchMoviesShowing = async () => {
+  const response = await getMovieWithShowingStatus();
+
+  return response.data.data;
+};
 
 export default function QuickBooking() {
+  const { data: movies = [] } = useQuery<Movie[]>({
+    queryKey: ["movies"],
+    queryFn: fetchMoviesShowing,
+  });
+
   return (
     <div className='max-w-6xl mx-auto px-4 -mt-8 relative z-10'>
       <div className='bg-zinc-800/90 backdrop-blur rounded-lg p-6'>
